@@ -9,6 +9,7 @@
         "lint": "eslint \"src/*.ts\"",
         "commit": "commit",
         "build": "tsc",
+        "debug": "ts-node-dev --inspect --no-notify --respawn --transpileOnly src/index.ts",
         "dev": "ts-node-dev --no-notify --respawn --transpileOnly src/index.ts",
         "test": "echo \"Error: no test specified\" && exit 1"
     },

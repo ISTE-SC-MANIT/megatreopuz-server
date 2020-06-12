@@ -7,6 +7,7 @@ PROTOC_GEN_GRPC_PATH="./node_modules/.bin/grpc_tools_node_protoc_plugin"
 # Directory to write generated code to (.js and .d.ts files)
 OUT_DIR="./src"
 
+mkdir -p $OUT_DIR
 npx grpc_tools_node_protoc \
     --plugin="protoc-gen-ts=${PROTOC_GEN_TS_PATH}" \
     --plugin=protoc-gen-grpc=${PROTOC_GEN_GRPC_PATH} \
