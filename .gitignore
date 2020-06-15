@@ -106,8 +106,6 @@ dist
 # vscode files
 .vscode
 
-# Generated protos
-src/megatreopuz-protos
 
 # vscode
 .vscode

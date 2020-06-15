@@ -1,6 +1,6 @@
 import express from "express";
 import { config } from "dotenv";
-import loginRouter from "./loginEndpoint";
+import loginRouter from "./login";
 // Load environment file
 config();
 // Make the application
