@@ -1,13 +1,12 @@
+import "./env";
 import express from "express";
-import { config } from "dotenv";
 import loginRouter from "./login";
-// Load environment file
-config();
+import logoutRouter from "./logout";
 // Make the application
 const app = express();
 // Plug in the login endpoint
 app.use(loginRouter);
-
+app.use(logoutRouter);
 // Extract port from the environment
 const port = process.env.PORT;
 if (!port) throw new Error(`Missing port from the environment`);
