@@ -11,7 +11,6 @@ export interface ContextType {
 export async function makeServer(): Promise<ApolloServer> {
     const schema = await buildSchema({
         resolvers: [LoginResolver, LogoutResolver],
-        validate: false,
     });
 
     return new ApolloServer({
