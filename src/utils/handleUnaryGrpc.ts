@@ -24,7 +24,7 @@ export function makeRPCCall<Output, Input>(
     return new Promise<Output>((resolve, reject) => {
         const metadata = makeMetadata(metadataInput);
         rpc.call(client, input, metadata, (err, value) => {
-            if (err) reject(new Error(err.message));
+            if (err) reject(new Error(err.details));
             if (!value) reject(new Error(`Server did not send any response`));
 
             resolve(value);
