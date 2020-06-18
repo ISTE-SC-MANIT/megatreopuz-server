@@ -8,6 +8,7 @@ import { LoginRequest, LoginResponse } from "../../megatreopuz-protos/auth_pb";
 import { makeRPCCall } from "../../utils/handleUnaryGrpc";
 import { ContextType } from "..";
 import { defaultCookieOptions, normalizeError } from "../../utils";
+import { CookieOptions } from "express";
 
 @Resolver()
 export class LoginResolver {
@@ -19,6 +20,7 @@ export class LoginResolver {
     @Mutation((returns) => Empty)
     async login(
         @Arg("credentials") { username, password }: LoginInput,
+        @Arg("remember", { defaultValue: false }) remember: boolean,
         @Ctx() { res }: ContextType
     ): Promise<Empty> {
         const client = new AuthServiceClient(
@@ -57,10 +59,12 @@ export class LoginResolver {
                 expires: accessExpires.toDate(),
             });
 
-            res.cookie("refreshToken", refreshToken, {
+            const refreshOptions: CookieOptions = {
                 ...defaultCookieOptions,
-                expires: refreshExpires.toDate(),
-            });
+            };
+
+            if (remember) refreshOptions.expires = refreshExpires.toDate();
+            res.cookie("refreshToken", refreshToken, refreshOptions);
         } catch (e) {
             throw normalizeError(e);
         }
