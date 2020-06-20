@@ -1,6 +1,6 @@
 import { Metadata, Client, requestCallback } from "grpc";
 
-interface MetadataInput {
+export interface MetadataInput {
     [key: string]: string;
 }
 

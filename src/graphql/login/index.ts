@@ -7,14 +7,18 @@ import { AuthServiceClient } from "../../megatreopuz-protos/auth_grpc_pb";
 import { LoginRequest, LoginResponse } from "../../megatreopuz-protos/auth_pb";
 import { makeRPCCall } from "../../utils/handleUnaryGrpc";
 import { ContextType } from "..";
-import { defaultCookieOptions, normalizeError } from "../../utils";
+import { defaultCookieOptions, normalizeError } from "../../utils/others";
 import { CookieOptions } from "express";
+import extractCredentials from "../../utils/extractCredentials";
 
 @Resolver()
 export class LoginResolver {
     @Query()
-    dummyQuery(): string {
-        return "hello World";
+    dummyQuery(@Ctx() { req }: ContextType): string {
+        const creds = extractCredentials(req);
+        console.log("\n");
+        console.log("Returning: ", creds?.refreshToken ?? "hello World");
+        return creds?.refreshToken ?? "hello World";
     }
 
     @Mutation((returns) => Empty)

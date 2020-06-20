@@ -6,6 +6,7 @@ import { LogoutResolver } from "./logout";
 
 export interface ContextType {
     res: Express.Response;
+    req: Express.Request;
 }
 
 export async function makeServer(): Promise<ApolloServer> {
@@ -15,7 +16,7 @@ export async function makeServer(): Promise<ApolloServer> {
 
     return new ApolloServer({
         schema,
-        context: ({ req, res }): ContextType => ({ res }),
+        context: ({ req, res }): ContextType => ({ req, res }),
         playground: {
             settings: {
                 "request.credentials": "same-origin",
