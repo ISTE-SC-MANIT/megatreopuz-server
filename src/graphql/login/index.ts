@@ -16,15 +16,15 @@ export class LoginResolver {
     @Query()
     dummyQuery(@Ctx() { req }: ContextType): string {
         const creds = extractCredentials(req);
-        console.log("\n");
-        console.log("Returning: ", creds?.refreshToken ?? "hello World");
+        const now = Date.now();
+        console.log("Resloving login", new Date().toString());
+        while (Date.now() - now < 3000);
         return creds?.refreshToken ?? "hello World";
     }
 
     @Mutation((returns) => Empty)
     async login(
         @Arg("credentials") { username, password }: LoginInput,
-        @Arg("remember", { defaultValue: false }) remember: boolean,
         @Ctx() { res }: ContextType
     ): Promise<Empty> {
         const client = new AuthServiceClient(
@@ -41,7 +41,7 @@ export class LoginResolver {
                 client.login,
                 login
             );
-            const accessToken = value.getAcesstoken();
+            const accessToken = value.getAccesstoken();
             const refreshToken = value.getRefreshtoken();
             const accessExpires = value.getAccesstokenexpiry();
             const refreshExpires = value.getRefreshtokenexpiry();
@@ -65,9 +65,9 @@ export class LoginResolver {
 
             const refreshOptions: CookieOptions = {
                 ...defaultCookieOptions,
+                expires: refreshExpires.toDate(),
             };
 
-            if (remember) refreshOptions.expires = refreshExpires.toDate();
             res.cookie("refreshToken", refreshToken, refreshOptions);
         } catch (e) {
             throw normalizeError(e);

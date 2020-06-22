@@ -3,6 +3,7 @@ import { LoginResolver } from "./login";
 import { ApolloServer } from "apollo-server-express";
 import Express from "express";
 import { LogoutResolver } from "./logout";
+import { SessionResolver } from "./validateUser";
 
 export interface ContextType {
     res: Express.Response;
@@ -11,7 +12,7 @@ export interface ContextType {
 
 export async function makeServer(): Promise<ApolloServer> {
     const schema = await buildSchema({
-        resolvers: [LoginResolver, LogoutResolver],
+        resolvers: [LoginResolver, LogoutResolver, SessionResolver],
     });
 
     return new ApolloServer({

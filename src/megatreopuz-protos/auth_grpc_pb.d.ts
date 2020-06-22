@@ -9,6 +9,7 @@ import * as grpc from "grpc";
 interface IAuthServiceService extends grpc.ServiceDefinition<grpc.UntypedServiceImplementation> {
   login: grpc.MethodDefinition<megatreopuz_protos_auth_pb.LoginRequest, megatreopuz_protos_auth_pb.LoginResponse>;
   logout: grpc.MethodDefinition<megatreopuz_protos_auth_pb.Empty, megatreopuz_protos_auth_pb.Empty>;
+  validateUser: grpc.MethodDefinition<megatreopuz_protos_auth_pb.Empty, megatreopuz_protos_auth_pb.Status>;
 }
 
 export const AuthServiceService: IAuthServiceService;
@@ -21,4 +22,7 @@ export class AuthServiceClient extends grpc.Client {
   logout(argument: megatreopuz_protos_auth_pb.Empty, callback: grpc.requestCallback<megatreopuz_protos_auth_pb.Empty>): grpc.ClientUnaryCall;
   logout(argument: megatreopuz_protos_auth_pb.Empty, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<megatreopuz_protos_auth_pb.Empty>): grpc.ClientUnaryCall;
   logout(argument: megatreopuz_protos_auth_pb.Empty, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<megatreopuz_protos_auth_pb.Empty>): grpc.ClientUnaryCall;
+  validateUser(argument: megatreopuz_protos_auth_pb.Empty, callback: grpc.requestCallback<megatreopuz_protos_auth_pb.Status>): grpc.ClientUnaryCall;
+  validateUser(argument: megatreopuz_protos_auth_pb.Empty, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<megatreopuz_protos_auth_pb.Status>): grpc.ClientUnaryCall;
+  validateUser(argument: megatreopuz_protos_auth_pb.Empty, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<megatreopuz_protos_auth_pb.Status>): grpc.ClientUnaryCall;
 }

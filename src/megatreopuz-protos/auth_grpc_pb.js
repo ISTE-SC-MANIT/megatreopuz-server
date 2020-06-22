@@ -38,6 +38,17 @@ function deserialize_auth_LoginResponse(buffer_arg) {
   return megatreopuz$protos_auth_pb.LoginResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_auth_Status(arg) {
+  if (!(arg instanceof megatreopuz$protos_auth_pb.Status)) {
+    throw new Error('Expected argument of type auth.Status');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_auth_Status(buffer_arg) {
+  return megatreopuz$protos_auth_pb.Status.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 
 var AuthServiceService = exports.AuthServiceService = {
   login: {
@@ -61,6 +72,17 @@ var AuthServiceService = exports.AuthServiceService = {
     requestDeserialize: deserialize_auth_Empty,
     responseSerialize: serialize_auth_Empty,
     responseDeserialize: deserialize_auth_Empty,
+  },
+  validateUser: {
+    path: '/auth.AuthService/validateUser',
+    requestStream: false,
+    responseStream: false,
+    requestType: megatreopuz$protos_auth_pb.Empty,
+    responseType: megatreopuz$protos_auth_pb.Status,
+    requestSerialize: serialize_auth_Empty,
+    requestDeserialize: deserialize_auth_Empty,
+    responseSerialize: serialize_auth_Status,
+    responseDeserialize: deserialize_auth_Status,
   },
 };
 
