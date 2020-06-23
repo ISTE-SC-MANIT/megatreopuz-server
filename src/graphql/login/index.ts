@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { Resolver, Arg, Query, Mutation, Ctx } from "type-graphql";
 import { LoginInput } from "./input";
-import { Empty } from "../types/emtpy";
+import { Empty } from "../types/empty";
 import { credentials } from "grpc";
 import { AuthServiceClient } from "../../megatreopuz-protos/auth_grpc_pb";
 import { LoginRequest, LoginResponse } from "../../megatreopuz-protos/auth_pb";

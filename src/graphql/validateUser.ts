@@ -1,21 +1,12 @@
 import "reflect-metadata";
-import {
-    Resolver,
-    Mutation,
-    Ctx,
-    Query,
-    ObjectType,
-    Field,
-    ID,
-} from "type-graphql";
-import { Empty } from "../types/emtpy";
+import { Resolver, Ctx, Query, ObjectType, Field } from "type-graphql";
 import { credentials } from "grpc";
-import { AuthServiceClient } from "../../megatreopuz-protos/auth_grpc_pb";
-import { Empty as grpcEmpty, Status } from "../../megatreopuz-protos/auth_pb";
-import { makeRPCCall, MetadataInput } from "../../utils/handleUnaryGrpc";
-import { ContextType } from "..";
-import { normalizeError, defaultCookieOptions } from "../../utils/others";
-import extractCredentials from "../../utils/extractCredentials";
+import { AuthServiceClient } from "../megatreopuz-protos/auth_grpc_pb";
+import { Empty as grpcEmpty, Status } from "../megatreopuz-protos/auth_pb";
+import { makeRPCCall, MetadataInput } from "../utils/handleUnaryGrpc";
+import { ContextType } from ".";
+import { normalizeError, defaultCookieOptions } from "../utils/others";
+import extractCredentials from "../utils/extractCredentials";
 
 @Resolver()
 export class SessionResolver {
@@ -55,12 +46,10 @@ export class SessionResolver {
             y = response.getAccesstokenexpiry();
 
             if (x && y) {
-                const refreshOptions = {
+                res.cookie("refreshToken", x, {
                     ...defaultCookieOptions,
                     expires: y.toDate(),
-                };
-
-                res.cookie("refreshToken", x, refreshOptions);
+                });
             }
             return response.getIsuserloggedin();
         } catch (e) {
