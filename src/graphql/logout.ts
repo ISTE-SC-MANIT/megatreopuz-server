@@ -1,12 +1,11 @@
 import "reflect-metadata";
 import { Resolver, Mutation, Ctx } from "type-graphql";
-import { Empty } from "./types/empty";
+import { Empty } from "./types/basic";
 import { credentials } from "grpc";
 import { AuthServiceClient } from "../megatreopuz-protos/auth_grpc_pb";
 import { Empty as grpcEmpty } from "../megatreopuz-protos/auth_pb";
 import { makeRPCCall, MetadataInput } from "../utils/handleUnaryGrpc";
 import { ContextType } from ".";
-import { normalizeError } from "../utils/others";
 import extractCredentials from "../utils/extractCredentials";
 
 @Resolver()
@@ -25,19 +24,15 @@ export class LogoutResolver {
         if (reqCreds?.refreshToken) metadata.refresh = reqCreds.refreshToken;
         if (reqCreds?.accessToken)
             metadata.authorization = reqCreds.accessToken;
-        try {
-            await makeRPCCall<grpcEmpty, grpcEmpty>(
-                client,
-                client.logout,
-                logout,
-                metadata
-            );
+        await makeRPCCall<grpcEmpty, grpcEmpty>(
+            client,
+            client.logout,
+            logout,
+            metadata
+        );
 
-            res.clearCookie("accessToken");
-            res.clearCookie("refreshToken");
-        } catch (e) {
-            throw normalizeError(e);
-        }
+        res.clearCookie("accessToken");
+        res.clearCookie("refreshToken");
 
         return new Empty();
     }

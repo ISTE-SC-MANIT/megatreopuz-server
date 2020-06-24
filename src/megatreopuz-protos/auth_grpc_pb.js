@@ -38,6 +38,17 @@ function deserialize_auth_LoginResponse(buffer_arg) {
   return megatreopuz$protos_auth_pb.LoginResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_auth_SendPasswordRecoveryEmailRequest(arg) {
+  if (!(arg instanceof megatreopuz$protos_auth_pb.SendPasswordRecoveryEmailRequest)) {
+    throw new Error('Expected argument of type auth.SendPasswordRecoveryEmailRequest');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_auth_SendPasswordRecoveryEmailRequest(buffer_arg) {
+  return megatreopuz$protos_auth_pb.SendPasswordRecoveryEmailRequest.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_auth_Status(arg) {
   if (!(arg instanceof megatreopuz$protos_auth_pb.Status)) {
     throw new Error('Expected argument of type auth.Status');
@@ -47,6 +58,17 @@ function serialize_auth_Status(arg) {
 
 function deserialize_auth_Status(buffer_arg) {
   return megatreopuz$protos_auth_pb.Status.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_auth_UpdatePasswordRequest(arg) {
+  if (!(arg instanceof megatreopuz$protos_auth_pb.UpdatePasswordRequest)) {
+    throw new Error('Expected argument of type auth.UpdatePasswordRequest');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_auth_UpdatePasswordRequest(buffer_arg) {
+  return megatreopuz$protos_auth_pb.UpdatePasswordRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 
@@ -83,6 +105,28 @@ var AuthServiceService = exports.AuthServiceService = {
     requestDeserialize: deserialize_auth_Empty,
     responseSerialize: serialize_auth_Status,
     responseDeserialize: deserialize_auth_Status,
+  },
+  sendPasswordRecoveryEmail: {
+    path: '/auth.AuthService/SendPasswordRecoveryEmail',
+    requestStream: false,
+    responseStream: false,
+    requestType: megatreopuz$protos_auth_pb.SendPasswordRecoveryEmailRequest,
+    responseType: megatreopuz$protos_auth_pb.Empty,
+    requestSerialize: serialize_auth_SendPasswordRecoveryEmailRequest,
+    requestDeserialize: deserialize_auth_SendPasswordRecoveryEmailRequest,
+    responseSerialize: serialize_auth_Empty,
+    responseDeserialize: deserialize_auth_Empty,
+  },
+  updatePassword: {
+    path: '/auth.AuthService/UpdatePassword',
+    requestStream: false,
+    responseStream: false,
+    requestType: megatreopuz$protos_auth_pb.UpdatePasswordRequest,
+    responseType: megatreopuz$protos_auth_pb.Empty,
+    requestSerialize: serialize_auth_UpdatePasswordRequest,
+    requestDeserialize: deserialize_auth_UpdatePasswordRequest,
+    responseSerialize: serialize_auth_Empty,
+    responseDeserialize: deserialize_auth_Empty,
   },
 };
 

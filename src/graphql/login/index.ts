@@ -1,27 +1,16 @@
 import "reflect-metadata";
-import { Resolver, Arg, Query, Mutation, Ctx } from "type-graphql";
+import { Resolver, Arg, Mutation, Ctx } from "type-graphql";
 import { LoginInput } from "./input";
-import { Empty } from "../types/empty";
+import { Empty } from "../types/basic";
 import { credentials } from "grpc";
 import { AuthServiceClient } from "../../megatreopuz-protos/auth_grpc_pb";
 import { LoginRequest, LoginResponse } from "../../megatreopuz-protos/auth_pb";
 import { makeRPCCall } from "../../utils/handleUnaryGrpc";
 import { ContextType } from "..";
-import { defaultCookieOptions, normalizeError } from "../../utils/others";
-import { CookieOptions } from "express";
-import extractCredentials from "../../utils/extractCredentials";
+import { defaultCookieOptions } from "../../utils/defaultCookies";
 
 @Resolver()
 export class LoginResolver {
-    @Query()
-    dummyQuery(@Ctx() { req }: ContextType): string {
-        const creds = extractCredentials(req);
-        const now = Date.now();
-        console.log("Resloving login", new Date().toString());
-        while (Date.now() - now < 3000);
-        return creds?.refreshToken ?? "hello World";
-    }
-
     @Mutation((returns) => Empty)
     async login(
         @Arg("credentials") { username, password }: LoginInput,
@@ -35,43 +24,33 @@ export class LoginResolver {
         login.setUsername(username);
         login.setPassword(password);
 
-        try {
-            const value = await makeRPCCall<LoginResponse, LoginRequest>(
-                client,
-                client.login,
-                login
-            );
-            const accessToken = value.getAccesstoken();
-            const refreshToken = value.getRefreshtoken();
-            const accessExpires = value.getAccesstokenexpiry();
-            const refreshExpires = value.getRefreshtokenexpiry();
+        const value = await makeRPCCall<LoginResponse, LoginRequest>(
+            client,
+            client.login,
+            login
+        );
+        const accessToken = value.getAccesstoken();
+        const refreshToken = value.getRefreshtoken();
+        const accessExpires = value.getAccesstokenexpiry();
+        const refreshExpires = value.getRefreshtokenexpiry();
 
-            if (!accessExpires) {
-                throw new Error(
-                    `Server did not send a access token expiration.`
-                );
-            }
-
-            if (!refreshExpires) {
-                throw new Error(
-                    `Server did not send a refresh token expiration.`
-                );
-            }
-
-            res.cookie("accessToken", accessToken, {
-                ...defaultCookieOptions,
-                expires: accessExpires.toDate(),
-            });
-
-            const refreshOptions: CookieOptions = {
-                ...defaultCookieOptions,
-                expires: refreshExpires.toDate(),
-            };
-
-            res.cookie("refreshToken", refreshToken, refreshOptions);
-        } catch (e) {
-            throw normalizeError(e);
+        if (!accessExpires) {
+            throw new Error(`Server did not send a access token expiration.`);
         }
+
+        if (!refreshExpires) {
+            throw new Error(`Server did not send a refresh token expiration.`);
+        }
+
+        res.cookie("accessToken", accessToken, {
+            ...defaultCookieOptions,
+            expires: accessExpires.toDate(),
+        });
+
+        res.cookie("refreshToken", refreshToken, {
+            ...defaultCookieOptions,
+            expires: refreshExpires.toDate(),
+        });
 
         return new Empty();
     }

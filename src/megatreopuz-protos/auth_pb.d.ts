@@ -120,3 +120,47 @@ export namespace Status {
   }
 }
 
+export class SendPasswordRecoveryEmailRequest extends jspb.Message {
+  getEmail(): string;
+  setEmail(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): SendPasswordRecoveryEmailRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: SendPasswordRecoveryEmailRequest): SendPasswordRecoveryEmailRequest.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: SendPasswordRecoveryEmailRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SendPasswordRecoveryEmailRequest;
+  static deserializeBinaryFromReader(message: SendPasswordRecoveryEmailRequest, reader: jspb.BinaryReader): SendPasswordRecoveryEmailRequest;
+}
+
+export namespace SendPasswordRecoveryEmailRequest {
+  export type AsObject = {
+    email: string,
+  }
+}
+
+export class UpdatePasswordRequest extends jspb.Message {
+  getPasswordid(): string;
+  setPasswordid(value: string): void;
+
+  getNewpassword(): string;
+  setNewpassword(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdatePasswordRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdatePasswordRequest): UpdatePasswordRequest.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: UpdatePasswordRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdatePasswordRequest;
+  static deserializeBinaryFromReader(message: UpdatePasswordRequest, reader: jspb.BinaryReader): UpdatePasswordRequest;
+}
+
+export namespace UpdatePasswordRequest {
+  export type AsObject = {
+    passwordid: string,
+    newpassword: string,
+  }
+}
+
