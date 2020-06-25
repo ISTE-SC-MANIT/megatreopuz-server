@@ -1,19 +1,24 @@
-import { ObjectType, Field } from "type-graphql";
+import { ObjectType, Field, InterfaceType, ID } from "type-graphql";
 import { uuid } from "uuidv4";
-@ObjectType()
-export class Empty {
-    @Field()
+@InterfaceType()
+class Node {
+    @Field((type) => ID)
     id: string = uuid();
 }
 
-@ObjectType()
-export class BasicBoolean {
+@ObjectType({ implements: Node })
+export class Empty extends Node {
+    constructor() {
+        super();
+    }
+}
+
+@ObjectType({ implements: Node })
+export class BasicBoolean extends Node {
     constructor(value: boolean) {
+        super();
         this.value = value;
     }
-
-    @Field()
-    id: string = uuid();
 
     @Field()
     value: boolean;
