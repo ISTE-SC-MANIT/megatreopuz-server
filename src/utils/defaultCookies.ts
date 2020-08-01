@@ -5,3 +5,5 @@ export const defaultCookieOptions: CookieOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
 };
+
+export const expiresIn: number = 6.048e8;

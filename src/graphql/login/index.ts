@@ -1,57 +1,93 @@
+import {
+    Resolver,
+    Mutation,
+    ObjectType,
+    Field,
+    Query,
+    Arg,
+    Ctx,
+} from "type-graphql";
 import "reflect-metadata";
-import { Resolver, Arg, Mutation, Ctx } from "type-graphql";
-import { LoginInput } from "./input";
-import { Empty } from "../types/basic";
-import { credentials } from "grpc";
-import { AuthServiceClient } from "../../megatreopuz-protos/auth_grpc_pb";
-import { LoginRequest, LoginResponse } from "../../megatreopuz-protos/auth_pb";
-import { makeRPCCall } from "../../utils/handleUnaryGrpc";
+import admin from "firebase-admin";
+import { expiresIn, defaultCookieOptions } from "../../utils/defaultCookies";
 import { ContextType } from "..";
-import { defaultCookieOptions } from "../../utils/defaultCookies";
+import { uuid } from "uuidv4";
+import { makeRPCCall, MetadataInput } from "../../utils/handleUnaryGrpc";
+import { AuthServiceClient } from "../../protos/auth_grpc_pb";
+import {
+    CheckStateResponse,
+    CheckUsernameAvailabilityRequest,
+    CheckUsernameAvailabilityResponse,
+} from "../../protos/auth_pb";
+import { credentials } from "grpc";
+import { Empty } from "../../protos/utils_pb";
+@ObjectType()
+class UserInitStatus {
+    constructor(value: boolean) {
+        this.initialised = value;
+    }
+    @Field()
+    initialised: boolean;
+}
+
+@ObjectType()
+class UsernameAvailability {
+    constructor(value: boolean) {
+        this.available = value;
+    }
+    @Field()
+    available: boolean;
+}
 
 @Resolver()
-export class LoginResolver {
-    @Mutation((returns) => Empty)
-    async login(
-        @Arg("credentials") { username, password }: LoginInput,
-        @Ctx() { res }: ContextType
-    ): Promise<Empty> {
-        const client = new AuthServiceClient(
-            process.env.AUTH_GRPC_SERVER ?? "",
-            credentials.createInsecure()
-        );
-        const login = new LoginRequest();
-        login.setUsername(username);
-        login.setPassword(password);
+export class LoginClass {
+    @Query((returns) => UsernameAvailability)
+    async checkUsername(
+        @Arg("username") username: string,
+        @Ctx() { authClient }: ContextType
+    ): Promise<UsernameAvailability> {
+        const request = new CheckUsernameAvailabilityRequest();
+        request.setUsername(username);
 
-        const value = await makeRPCCall<LoginResponse, LoginRequest>(
-            client,
-            client.login,
-            login
-        );
-        const accessToken = value.getAccesstoken();
-        const refreshToken = value.getRefreshtoken();
-        const accessExpires = value.getAccesstokenexpiry();
-        const refreshExpires = value.getRefreshtokenexpiry();
-
-        if (!accessExpires) {
-            throw new Error(`Server did not send a access token expiration.`);
+        try {
+            const result = await makeRPCCall<
+                CheckUsernameAvailabilityResponse,
+                CheckUsernameAvailabilityRequest
+            >(authClient, authClient.checkUsernameAvailability, request);
+            return new UsernameAvailability(result.getAvailable());
+        } catch {
+            throw new Error(`Could not check database`);
         }
+    }
 
-        if (!refreshExpires) {
-            throw new Error(`Server did not send a refresh token expiration.`);
+    @Mutation((returns) => UserInitStatus)
+    async createUserSession(
+        @Ctx() { res, authClient: client }: ContextType,
+        @Arg("idToken") idToken: string
+    ): Promise<UserInitStatus> {
+        const empty = new Empty();
+
+        try {
+            const cookie = await admin
+                .auth()
+                .createSessionCookie(idToken, { expiresIn });
+
+            res.cookie("authorization", cookie, {
+                ...defaultCookieOptions,
+                expires: new Date(Date.now() + expiresIn),
+            });
+
+            const value = await makeRPCCall<CheckStateResponse, Empty>(
+                client,
+                client.checkUserState,
+                empty,
+                {
+                    authorization: cookie,
+                }
+            );
+            return new UserInitStatus(value.getInitialised());
+        } catch (e) {
+            throw new Error(`Could not verify your identity. Please try again`);
         }
-
-        res.cookie("accessToken", accessToken, {
-            ...defaultCookieOptions,
-            expires: accessExpires.toDate(),
-        });
-
-        res.cookie("refreshToken", refreshToken, {
-            ...defaultCookieOptions,
-            expires: refreshExpires.toDate(),
-        });
-
-        return new Empty();
     }
 }

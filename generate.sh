@@ -5,10 +5,11 @@ PROTOC_GEN_TS_PATH="./node_modules/.bin/protoc-gen-ts"
 PROTOC_GEN_GRPC_PATH="./node_modules/.bin/grpc_tools_node_protoc_plugin"
 
 # Directory to write generated code to (.js and .d.ts files)
-OUT_DIR="./src"
+OUT_DIR="./src/protos"
 
 mkdir -p $OUT_DIR
 npx grpc_tools_node_protoc \
+    --proto_path="./megatreopuz-protos" \
     --plugin="protoc-gen-ts=${PROTOC_GEN_TS_PATH}" \
     --plugin=protoc-gen-grpc=${PROTOC_GEN_GRPC_PATH} \
     --js_out="import_style=commonjs,binary:${OUT_DIR}" \
