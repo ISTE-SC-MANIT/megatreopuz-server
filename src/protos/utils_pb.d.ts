@@ -1,4 +1,4 @@
-// package: auth
+// package: protos
 // file: utils.proto
 
 import * as jspb from "google-protobuf";

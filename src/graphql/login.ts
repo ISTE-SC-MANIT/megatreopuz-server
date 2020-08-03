@@ -9,18 +9,18 @@ import {
 } from "type-graphql";
 import "reflect-metadata";
 import admin from "firebase-admin";
-import { expiresIn, defaultCookieOptions } from "../../utils/defaultCookies";
-import { ContextType } from "..";
+import { expiresIn, defaultCookieOptions } from "../utils/defaultCookies";
+import { ContextType } from ".";
 import { uuid } from "uuidv4";
-import { makeRPCCall, MetadataInput } from "../../utils/handleUnaryGrpc";
-import { AuthServiceClient } from "../../protos/auth_grpc_pb";
+import { makeRPCCall, MetadataInput } from "../utils/handleUnaryGrpc";
+import { AuthServiceClient } from "../protos/auth_grpc_pb";
 import {
     CheckStateResponse,
     CheckUsernameAvailabilityRequest,
     CheckUsernameAvailabilityResponse,
-} from "../../protos/auth_pb";
+} from "../protos/auth_pb";
 import { credentials } from "grpc";
-import { Empty } from "../../protos/utils_pb";
+import { Empty } from "../protos/utils_pb";
 @ObjectType()
 class UserInitStatus {
     constructor(value: boolean) {

@@ -6,17 +6,20 @@ import admin from "firebase-admin";
 import redis, { RedisClient } from "redis";
 import { credentials } from "grpc";
 import { AuthServiceClient } from "../protos/auth_grpc_pb";
+import { UserServiceClient } from "../protos/user_grpc_pb";
+import { UserClass } from "./user";
 export interface ContextType {
     res: Express.Response;
     req: Express.Request;
     redisClient: RedisClient;
-    idToken?: string;
+    authToken?: string;
     authClient: AuthServiceClient;
+    userClient: UserServiceClient;
 }
 
 export async function makeServer(): Promise<ApolloServer> {
     const schema = await buildSchema({
-        resolvers: [LoginClass],
+        resolvers: [LoginClass, UserClass],
     });
 
     admin.initializeApp();
@@ -32,14 +35,20 @@ export async function makeServer(): Promise<ApolloServer> {
         credentials.createInsecure()
     );
 
+    const userClient = new UserServiceClient(
+        process.env.USER_GRPC_SERVER ?? "",
+        credentials.createInsecure()
+    );
+
     return new ApolloServer({
         schema,
         context: ({ req, res }): ContextType => ({
             req,
             res,
             redisClient: redisClient,
-            idToken: req.get("Authorization"),
+            authToken: req.cookies["authorization"],
             authClient,
+            userClient,
         }),
         playground: {
             settings: {

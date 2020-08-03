@@ -1,0 +1,46 @@
+// package: protos
+// file: user.proto
+
+import * as jspb from "google-protobuf";
+import * as utils_pb from "./utils_pb";
+
+export class CreateLocalPlayerRequest extends jspb.Message {
+  getUsername(): string;
+  setUsername(value: string): void;
+
+  getName(): string;
+  setName(value: string): void;
+
+  getPhone(): string;
+  setPhone(value: string): void;
+
+  getCollege(): string;
+  setCollege(value: string): void;
+
+  getCountry(): string;
+  setCountry(value: string): void;
+
+  getYear(): number;
+  setYear(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): CreateLocalPlayerRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: CreateLocalPlayerRequest): CreateLocalPlayerRequest.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: CreateLocalPlayerRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): CreateLocalPlayerRequest;
+  static deserializeBinaryFromReader(message: CreateLocalPlayerRequest, reader: jspb.BinaryReader): CreateLocalPlayerRequest;
+}
+
+export namespace CreateLocalPlayerRequest {
+  export type AsObject = {
+    username: string,
+    name: string,
+    phone: string,
+    college: string,
+    country: string,
+    year: number,
+  }
+}
+
