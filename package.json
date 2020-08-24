@@ -11,7 +11,7 @@
     "build": "tsc",
     "dev": "NODE_ENV=development ts-node-dev --inspect=8000 --no-notify --respawn --transpileOnly src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "ts-node src/index.ts"
+    "watch": "nodemon  src/index.ts"
   },
   "repository": {
     "type": "git",

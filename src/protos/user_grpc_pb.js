@@ -38,6 +38,17 @@ function deserialize_protos_UpdateLocalPlayerRequest(buffer_arg) {
   return user_pb.UpdateLocalPlayerRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_protos_getPlayerResponse(arg) {
+  if (!(arg instanceof user_pb.getPlayerResponse)) {
+    throw new Error('Expected argument of type protos.getPlayerResponse');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_protos_getPlayerResponse(buffer_arg) {
+  return user_pb.getPlayerResponse.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 
 var UserServiceService = exports.UserServiceService = {
   createLocalPlayer: {
@@ -61,6 +72,17 @@ var UserServiceService = exports.UserServiceService = {
     requestDeserialize: deserialize_protos_UpdateLocalPlayerRequest,
     responseSerialize: serialize_protos_Empty,
     responseDeserialize: deserialize_protos_Empty,
+  },
+  getPlayer: {
+    path: '/protos.UserService/getPlayer',
+    requestStream: false,
+    responseStream: false,
+    requestType: utils_pb.Empty,
+    responseType: user_pb.getPlayerResponse,
+    requestSerialize: serialize_protos_Empty,
+    requestDeserialize: deserialize_protos_Empty,
+    responseSerialize: serialize_protos_getPlayerResponse,
+    responseDeserialize: deserialize_protos_getPlayerResponse,
   },
 };
 
