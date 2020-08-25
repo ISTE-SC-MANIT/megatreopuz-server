@@ -70,6 +70,8 @@ export class LoginClass {
     @Arg("idToken") idToken: string
   ): Promise<UserInitStatus> {
     const empty = new Empty();
+    console.log("a");
+    console.log(idToken);
 
     try {
       const cookie = await admin
@@ -95,6 +97,7 @@ export class LoginClass {
       );
       return new UserInitStatus(value.getInitialised(), cookie);
     } catch (e) {
+      console.log(e);
       throw new Error(`Could not verify your identity. Please try again`);
     }
   }
