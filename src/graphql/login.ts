@@ -77,10 +77,10 @@ export class LoginClass {
       const cookie = await admin
         .auth()
         .createSessionCookie(idToken, { expiresIn });
-      res.setHeader("Credentials", "same-origin");
+      res.setHeader("Credentials", "include");
 
       //TODO: Set from server
-      res.setHeader("Set-Cookie", `sessionId=${cookie}; HttpOnly; Path=/;`);
+      res.setHeader("Set-Cookie", `sessionId=${cookie};domain=.istemanit.in; HttpOnly; Path=/;`);
 
       res.cookie("authorization", cookie, {
         ...defaultCookieOptions,
