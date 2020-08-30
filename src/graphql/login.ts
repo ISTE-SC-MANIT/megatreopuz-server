@@ -80,7 +80,7 @@ export class LoginClass {
       res.setHeader("Credentials", "same-origin");
 
       //TODO: Set from server
-      res.setHeader("authorization", cookie);
+      res.setHeader("Set-Cookie", `sessionId=${cookie}; HttpOnly; Path=/;`);
 
       res.cookie("authorization", cookie, {
         ...defaultCookieOptions,
