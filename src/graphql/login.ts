@@ -80,7 +80,7 @@ export class LoginClass {
       res.setHeader("Credentials", "include");
 
       //TODO: Set from server
-      res.setHeader("Set-Cookie", `sessionId=${cookie}; HttpOnly; Path=/;`);
+      res.setHeader("Set-Cookie", `sessionId=${cookie};domain=.istemanit.in; HttpOnly; Path=/;`);
 
       res.cookie("authorization", cookie, {
         ...defaultCookieOptions,
