@@ -82,10 +82,10 @@ export class LoginClass {
       //TODO: Set from server
       res.setHeader("authorization", cookie);
 
-      // res.cookie("authorization", cookie, {
-      //   ...defaultCookieOptions,
-      //   expires: new Date(Date.now() + expiresIn),
-      // });
+      res.cookie("authorization", cookie, {
+        ...defaultCookieOptions,
+        expires: new Date(Date.now() + expiresIn),
+      });
 
       const value = await makeRPCCall<CheckStateResponse, Empty>(
         client,

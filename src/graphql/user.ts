@@ -181,6 +181,7 @@ export class UserClass {
       );
       return new Empty();
     } catch (e) {
+      console.log(e);
       throw new Error(`Could not create user. Please try again`);
     }
   }
