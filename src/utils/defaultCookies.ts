@@ -3,7 +3,7 @@ import { CookieOptions } from "express";
 export const defaultCookieOptions: CookieOptions = {
   sameSite: "lax",
   httpOnly: true,
-  domain: "https://megatreopuz.istemanit.in",
+  domain: "istemanit.in",
   // secure: process.env.NODE_ENV === "production",
   // path: "/",
 };
