@@ -132,3 +132,59 @@ export namespace getPlayerResponse {
   }
 }
 
+export class AnswerQuestion extends jspb.Message {
+  getId(): string;
+  setId(value: string): void;
+
+  getEmail(): string;
+  setEmail(value: string): void;
+
+  getQuestionno(): number;
+  setQuestionno(value: number): void;
+
+  getAnswer(): string;
+  setAnswer(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): AnswerQuestion.AsObject;
+  static toObject(includeInstance: boolean, msg: AnswerQuestion): AnswerQuestion.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: AnswerQuestion, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): AnswerQuestion;
+  static deserializeBinaryFromReader(message: AnswerQuestion, reader: jspb.BinaryReader): AnswerQuestion;
+}
+
+export namespace AnswerQuestion {
+  export type AsObject = {
+    id: string,
+    email: string,
+    questionno: number,
+    answer: string,
+  }
+}
+
+export class GetNextQuestionRespone extends jspb.Message {
+  getQuestionno(): number;
+  setQuestionno(value: number): void;
+
+  getQuestion(): string;
+  setQuestion(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetNextQuestionRespone.AsObject;
+  static toObject(includeInstance: boolean, msg: GetNextQuestionRespone): GetNextQuestionRespone.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: GetNextQuestionRespone, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetNextQuestionRespone;
+  static deserializeBinaryFromReader(message: GetNextQuestionRespone, reader: jspb.BinaryReader): GetNextQuestionRespone;
+}
+
+export namespace GetNextQuestionRespone {
+  export type AsObject = {
+    questionno: number,
+    question: string,
+  }
+}
+

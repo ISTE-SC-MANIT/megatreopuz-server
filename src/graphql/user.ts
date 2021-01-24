@@ -17,6 +17,8 @@ import {
   CreateLocalPlayerRequest,
   UpdateLocalPlayerRequest,
   getPlayerResponse,
+  AnswerQuestion,
+  GetNextQuestionRespone,
 } from "../protos/user_pb";
 import { MinLength, Min } from "class-validator";
 import { Empty } from "./empty";
@@ -75,6 +77,21 @@ class UserUpdateInput {
   year: number;
 }
 
+@InputType()
+class AnswerQuestionInput {
+  @Field()
+  @MinLength(1)
+  email: string;
+
+  @Field()
+  @MinLength(1)
+  answer: string;
+
+  @Field({ nullable: true })
+  @Min(1)
+  questionNo: number;
+}
+
 @ObjectType()
 export class User {
   constructor(
@@ -122,6 +139,19 @@ export class User {
   year: number;
 }
 
+@ObjectType()
+export class Question {
+  constructor(question: string, questionNo: number) {
+    this.question = question;
+    this.questionNo = questionNo;
+  }
+
+  @Field()
+  question: string;
+
+  @Field((type) => Int)
+  questionNo: number;
+}
 @Resolver()
 export class UserClass {
   @Query((returns) => User)
@@ -155,13 +185,35 @@ export class UserClass {
     }
   }
 
+  @Query((returns) => Question)
+  async getQuestion(
+    @Ctx() { userClient, authToken, req }: ContextType
+  ): Promise<Question> {
+    try {
+      const empty = new grpcEmpty();
+      const result = await makeRPCCall<GetNextQuestionRespone, grpcEmpty>(
+        userClient,
+        userClient.getNextQuestion,
+        empty,
+        {
+          //@ts-ignore
+          authorization: req.header("authorization"),
+        }
+      );
+
+      return new Question(result.getQuestion(), result.getQuestionno());
+    } catch (e) {
+      throw new Error(`Could not check database`);
+    }
+  }
+
   @Mutation((returns) => Empty)
   async createLocalUser(
     @Arg("input") payload: UserCreateInput,
     @Ctx() { userClient, authToken, req }: ContextType
   ): Promise<Empty> {
     //if (!authToken) throw new Error(`User is not logged in`);
-
+    console.log("sad");
     try {
       const input = new CreateLocalPlayerRequest();
       input.setName(payload.name);
@@ -208,6 +260,33 @@ export class UserClass {
       await makeRPCCall<grpcEmpty, UpdateLocalPlayerRequest>(
         userClient,
         userClient.updateLocalPlayer,
+        input,
+        {
+          //@ts-ignore
+          authorization: req.header("authorization"),
+        }
+      );
+      return new Empty();
+    } catch (e) {
+      throw new Error(`Could not update user. Please try again`);
+    }
+  }
+  @Mutation((returns) => Empty)
+  async answerQuestion(
+    @Arg("input") payload: AnswerQuestionInput,
+    @Ctx() { userClient, authToken, req }: ContextType
+  ): Promise<Empty> {
+    // if (!authToken) throw new Error(`User is not logged in`);
+
+    try {
+      const input = new AnswerQuestion();
+
+      input.setAnswer(payload.answer);
+      input.setEmail(payload.email);
+      input.setQuestionno(payload.questionNo);
+      await makeRPCCall<grpcEmpty, AnswerQuestion>(
+        userClient,
+        userClient.answerQuestion,
         input,
         {
           //@ts-ignore

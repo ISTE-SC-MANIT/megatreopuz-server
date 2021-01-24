@@ -77,10 +77,6 @@ export class LoginClass {
       const cookie = await admin
         .auth()
         .createSessionCookie(idToken, { expiresIn });
-      res.setHeader("Credentials", "include");
-
-      //TODO: Set from server
-      res.setHeader("Set-Cookie", `sessionId=${cookie};domain=.istemanit.in; HttpOnly; Path=/;`);
 
       res.cookie("authorization", cookie, {
         ...defaultCookieOptions,

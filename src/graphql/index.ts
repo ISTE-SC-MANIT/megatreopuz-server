@@ -3,11 +3,14 @@ import { ApolloServer } from "apollo-server-express";
 import Express from "express";
 import { LoginClass } from "./login";
 import admin from "firebase-admin";
+
 import redis, { RedisClient } from "redis";
 import { credentials } from "grpc";
 import { AuthServiceClient } from "../protos/auth_grpc_pb";
 import { UserServiceClient } from "../protos/user_grpc_pb";
 import { UserClass } from "./user";
+
+const serviceAccount = require("../../../m2.json");
 export interface ContextType {
   res: Express.Response;
   req: Express.Request;
@@ -22,7 +25,9 @@ export async function makeServer(): Promise<ApolloServer> {
     resolvers: [LoginClass, UserClass],
   });
 
-  admin.initializeApp();
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+  });
 
   // const opts: redis.ClientOpts = {
   //     host: process.env.REDIS_HOST,

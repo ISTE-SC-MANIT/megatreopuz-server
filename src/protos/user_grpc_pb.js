@@ -5,6 +5,17 @@ var grpc = require('grpc');
 var user_pb = require('./user_pb.js');
 var utils_pb = require('./utils_pb.js');
 
+function serialize_protos_AnswerQuestion(arg) {
+  if (!(arg instanceof user_pb.AnswerQuestion)) {
+    throw new Error('Expected argument of type protos.AnswerQuestion');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_protos_AnswerQuestion(buffer_arg) {
+  return user_pb.AnswerQuestion.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_protos_CreateLocalPlayerRequest(arg) {
   if (!(arg instanceof user_pb.CreateLocalPlayerRequest)) {
     throw new Error('Expected argument of type protos.CreateLocalPlayerRequest');
@@ -25,6 +36,17 @@ function serialize_protos_Empty(arg) {
 
 function deserialize_protos_Empty(buffer_arg) {
   return utils_pb.Empty.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_protos_GetNextQuestionRespone(arg) {
+  if (!(arg instanceof user_pb.GetNextQuestionRespone)) {
+    throw new Error('Expected argument of type protos.GetNextQuestionRespone');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_protos_GetNextQuestionRespone(buffer_arg) {
+  return user_pb.GetNextQuestionRespone.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 function serialize_protos_UpdateLocalPlayerRequest(arg) {
@@ -83,6 +105,28 @@ var UserServiceService = exports.UserServiceService = {
     requestDeserialize: deserialize_protos_Empty,
     responseSerialize: serialize_protos_getPlayerResponse,
     responseDeserialize: deserialize_protos_getPlayerResponse,
+  },
+  answerQuestion: {
+    path: '/protos.UserService/answerQuestion',
+    requestStream: false,
+    responseStream: false,
+    requestType: user_pb.AnswerQuestion,
+    responseType: utils_pb.Empty,
+    requestSerialize: serialize_protos_AnswerQuestion,
+    requestDeserialize: deserialize_protos_AnswerQuestion,
+    responseSerialize: serialize_protos_Empty,
+    responseDeserialize: deserialize_protos_Empty,
+  },
+  getNextQuestion: {
+    path: '/protos.UserService/getNextQuestion',
+    requestStream: false,
+    responseStream: false,
+    requestType: utils_pb.Empty,
+    responseType: user_pb.GetNextQuestionRespone,
+    requestSerialize: serialize_protos_Empty,
+    requestDeserialize: deserialize_protos_Empty,
+    responseSerialize: serialize_protos_GetNextQuestionRespone,
+    responseDeserialize: deserialize_protos_GetNextQuestionRespone,
   },
 };
 

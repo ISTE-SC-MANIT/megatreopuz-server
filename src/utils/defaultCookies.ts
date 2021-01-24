@@ -1,9 +1,9 @@
 import { CookieOptions } from "express";
 
 export const defaultCookieOptions: CookieOptions = {
-  sameSite: "lax",
-  httpOnly: true,
-  domain: "istemanit.in",
+  // sameSite: "lax",
+  // httpOnly: true,
+  // domain: "localhost:3000",
   // secure: process.env.NODE_ENV === "production",
   // path: "/",
 };
