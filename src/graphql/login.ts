@@ -78,7 +78,7 @@ export class LoginClass {
         .auth()
         .createSessionCookie(idToken, { expiresIn });
 
-      res.cookie("authorization", cookie, {
+      res.cookie("authorization2", cookie, {
         ...defaultCookieOptions,
         expires: new Date(Date.now() + expiresIn),
       });

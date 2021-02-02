@@ -13,6 +13,8 @@ interface IUserServiceService extends grpc.ServiceDefinition<grpc.UntypedService
   getPlayer: grpc.MethodDefinition<utils_pb.Empty, user_pb.getPlayerResponse>;
   answerQuestion: grpc.MethodDefinition<user_pb.AnswerQuestion, utils_pb.Empty>;
   getNextQuestion: grpc.MethodDefinition<utils_pb.Empty, user_pb.GetNextQuestionRespone>;
+  createQuestion: grpc.MethodDefinition<user_pb.CreateQuestionRequest, utils_pb.Empty>;
+  getLeaderBoard: grpc.MethodDefinition<utils_pb.Empty, user_pb.GetLeaderBoardResponse>;
 }
 
 export const UserServiceService: IUserServiceService;
@@ -34,4 +36,10 @@ export class UserServiceClient extends grpc.Client {
   getNextQuestion(argument: utils_pb.Empty, callback: grpc.requestCallback<user_pb.GetNextQuestionRespone>): grpc.ClientUnaryCall;
   getNextQuestion(argument: utils_pb.Empty, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<user_pb.GetNextQuestionRespone>): grpc.ClientUnaryCall;
   getNextQuestion(argument: utils_pb.Empty, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<user_pb.GetNextQuestionRespone>): grpc.ClientUnaryCall;
+  createQuestion(argument: user_pb.CreateQuestionRequest, callback: grpc.requestCallback<utils_pb.Empty>): grpc.ClientUnaryCall;
+  createQuestion(argument: user_pb.CreateQuestionRequest, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<utils_pb.Empty>): grpc.ClientUnaryCall;
+  createQuestion(argument: user_pb.CreateQuestionRequest, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<utils_pb.Empty>): grpc.ClientUnaryCall;
+  getLeaderBoard(argument: utils_pb.Empty, callback: grpc.requestCallback<user_pb.GetLeaderBoardResponse>): grpc.ClientUnaryCall;
+  getLeaderBoard(argument: utils_pb.Empty, metadataOrOptions: grpc.Metadata | grpc.CallOptions | null, callback: grpc.requestCallback<user_pb.GetLeaderBoardResponse>): grpc.ClientUnaryCall;
+  getLeaderBoard(argument: utils_pb.Empty, metadata: grpc.Metadata | null, options: grpc.CallOptions | null, callback: grpc.requestCallback<user_pb.GetLeaderBoardResponse>): grpc.ClientUnaryCall;
 }

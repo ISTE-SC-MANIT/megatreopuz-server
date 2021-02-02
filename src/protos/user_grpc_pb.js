@@ -27,6 +27,17 @@ function deserialize_protos_CreateLocalPlayerRequest(buffer_arg) {
   return user_pb.CreateLocalPlayerRequest.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
+function serialize_protos_CreateQuestionRequest(arg) {
+  if (!(arg instanceof user_pb.CreateQuestionRequest)) {
+    throw new Error('Expected argument of type protos.CreateQuestionRequest');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_protos_CreateQuestionRequest(buffer_arg) {
+  return user_pb.CreateQuestionRequest.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_protos_Empty(arg) {
   if (!(arg instanceof utils_pb.Empty)) {
     throw new Error('Expected argument of type protos.Empty');
@@ -36,6 +47,17 @@ function serialize_protos_Empty(arg) {
 
 function deserialize_protos_Empty(buffer_arg) {
   return utils_pb.Empty.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_protos_GetLeaderBoardResponse(arg) {
+  if (!(arg instanceof user_pb.GetLeaderBoardResponse)) {
+    throw new Error('Expected argument of type protos.GetLeaderBoardResponse');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_protos_GetLeaderBoardResponse(buffer_arg) {
+  return user_pb.GetLeaderBoardResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
 function serialize_protos_GetNextQuestionRespone(arg) {
@@ -127,6 +149,28 @@ var UserServiceService = exports.UserServiceService = {
     requestDeserialize: deserialize_protos_Empty,
     responseSerialize: serialize_protos_GetNextQuestionRespone,
     responseDeserialize: deserialize_protos_GetNextQuestionRespone,
+  },
+  createQuestion: {
+    path: '/protos.UserService/createQuestion',
+    requestStream: false,
+    responseStream: false,
+    requestType: user_pb.CreateQuestionRequest,
+    responseType: utils_pb.Empty,
+    requestSerialize: serialize_protos_CreateQuestionRequest,
+    requestDeserialize: deserialize_protos_CreateQuestionRequest,
+    responseSerialize: serialize_protos_Empty,
+    responseDeserialize: deserialize_protos_Empty,
+  },
+  getLeaderBoard: {
+    path: '/protos.UserService/getLeaderBoard',
+    requestStream: false,
+    responseStream: false,
+    requestType: utils_pb.Empty,
+    responseType: user_pb.GetLeaderBoardResponse,
+    requestSerialize: serialize_protos_Empty,
+    requestDeserialize: deserialize_protos_Empty,
+    responseSerialize: serialize_protos_GetLeaderBoardResponse,
+    responseDeserialize: deserialize_protos_GetLeaderBoardResponse,
   },
 };
 

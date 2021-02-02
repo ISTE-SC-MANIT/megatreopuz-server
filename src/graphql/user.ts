@@ -10,7 +10,7 @@ import {
   Query,
 } from "type-graphql";
 import { Empty as grpcEmpty } from "../protos/utils_pb";
-
+import moment from "moment";
 import { makeRPCCall } from "../utils/handleUnaryGrpc";
 import { ContextType } from ".";
 import {
@@ -19,6 +19,8 @@ import {
   getPlayerResponse,
   AnswerQuestion,
   GetNextQuestionRespone,
+  CreateQuestionRequest,
+  GetLeaderBoardResponse,
 } from "../protos/user_pb";
 import { MinLength, Min } from "class-validator";
 import { Empty } from "./empty";
@@ -48,6 +50,25 @@ class UserCreateInput {
   @Field()
   @Min(1)
   year: number;
+}
+
+@InputType()
+class CreateQuestionInput {
+  @Field()
+  @MinLength(1)
+  answer: string;
+
+  @Field()
+  @MinLength(1)
+  imgUrl: string;
+
+  @Field()
+  @MinLength(1)
+  question: string;
+
+  @Field()
+  @Min(1)
+  questionNo: number;
 }
 
 @InputType()
@@ -81,15 +102,60 @@ class UserUpdateInput {
 class AnswerQuestionInput {
   @Field()
   @MinLength(1)
-  email: string;
-
-  @Field()
-  @MinLength(1)
   answer: string;
 
   @Field({ nullable: true })
   @Min(1)
   questionNo: number;
+
+  @Field()
+  id: string;
+}
+
+@InputType()
+class GetMyProfileInput {
+  @Field()
+  @MinLength(1)
+  userId: string;
+}
+
+@ObjectType()
+export class Users {
+  constructor(
+    name: string,
+    questionAttempted: number,
+    username: string,
+    lastAnsweredQuestionTime
+  ) {
+    this.username = username;
+    this.name = name;
+    this.questionAttempted = questionAttempted;
+    this.lastAnsweredQuestionTime = lastAnsweredQuestionTime;
+  }
+  @Field()
+  name: string;
+
+  @Field()
+  questionAttempted: number;
+
+  @Field()
+  username: string;
+
+  @Field()
+  lastAnsweredQuestionTime: string;
+}
+
+@ObjectType()
+export class RankInfo {
+  constructor(rank: number, totalParticipants: number) {
+    (this.rank = rank), (this.totalParticipants = totalParticipants);
+  }
+
+  @Field()
+  rank: number;
+
+  @Field()
+  totalParticipants: number;
 }
 
 @ObjectType()
@@ -102,7 +168,9 @@ export class User {
     year: number,
     email: string,
     college: string,
-    country: string
+    country: string,
+    attempts: number,
+    solvedQuestions: number
   ) {
     this.id = id;
     this.userName = username;
@@ -112,6 +180,8 @@ export class User {
     this.email = email;
     this.college = college;
     this.country = country;
+    this.solvedQuestions = solvedQuestions;
+    this.totalAttempts = attempts;
   }
 
   @Field()
@@ -137,13 +207,20 @@ export class User {
 
   @Field((type) => Int)
   year: number;
+
+  @Field((type) => Int)
+  totalAttempts: number;
+
+  @Field((type) => Int)
+  solvedQuestions: number;
 }
 
 @ObjectType()
 export class Question {
-  constructor(question: string, questionNo: number) {
+  constructor(question: string, questionNo: number, id: string) {
     this.question = question;
     this.questionNo = questionNo;
+    this.id = id;
   }
 
   @Field()
@@ -151,6 +228,9 @@ export class Question {
 
   @Field((type) => Int)
   questionNo: number;
+
+  @Field()
+  id: string;
 }
 @Resolver()
 export class UserClass {
@@ -178,9 +258,12 @@ export class UserClass {
         result.getYear(),
         result.getEmail(),
         result.getCollege(),
-        result.getCountry()
+        result.getCountry(),
+        result.getAttempts(),
+        result.getTotalsolvedquestions()
       );
     } catch (e) {
+      console.log(e);
       throw new Error(`Could not check database`);
     }
   }
@@ -201,8 +284,13 @@ export class UserClass {
         }
       );
 
-      return new Question(result.getQuestion(), result.getQuestionno());
+      return new Question(
+        result.getQuestion(),
+        result.getQuestionno(),
+        result.getQuestionid()
+      );
     } catch (e) {
+      console.log(e);
       throw new Error(`Could not check database`);
     }
   }
@@ -213,7 +301,7 @@ export class UserClass {
     @Ctx() { userClient, authToken, req }: ContextType
   ): Promise<Empty> {
     //if (!authToken) throw new Error(`User is not logged in`);
-    console.log("sad");
+
     try {
       const input = new CreateLocalPlayerRequest();
       input.setName(payload.name);
@@ -237,6 +325,37 @@ export class UserClass {
       throw new Error(`Could not create user. Please try again`);
     }
   }
+
+  @Mutation((returns) => Empty)
+  async createQuestion(
+    @Arg("input") payload: CreateQuestionInput,
+    @Ctx() { userClient, authToken, req }: ContextType
+  ): Promise<Empty> {
+    //if (!authToken) throw new Error(`User is not logged in`);
+
+    try {
+      const input = new CreateQuestionRequest();
+      input.setAnswer(payload.answer);
+      input.setImgurl(payload.imgUrl);
+      input.setQuestion(payload.question);
+      input.setQuestionno(payload.questionNo);
+
+      await makeRPCCall<grpcEmpty, CreateQuestionRequest>(
+        userClient,
+        userClient.createQuestion,
+        input,
+        {
+          //@ts-ignore
+          authorization: req.header("authorization"),
+        }
+      );
+      return new Empty();
+    } catch (e) {
+      console.log(e);
+      throw new Error(`Could not create user. Please try again`);
+    }
+  }
+
   @Mutation((returns) => Empty)
   async updateLocalUser(
     @Arg("input") payload: UserUpdateInput,
@@ -280,9 +399,9 @@ export class UserClass {
 
     try {
       const input = new AnswerQuestion();
-
+      input.setId(payload.id);
       input.setAnswer(payload.answer);
-      input.setEmail(payload.email);
+      // input.setEmail(payload.email);
       input.setQuestionno(payload.questionNo);
       await makeRPCCall<grpcEmpty, AnswerQuestion>(
         userClient,
@@ -295,7 +414,98 @@ export class UserClass {
       );
       return new Empty();
     } catch (e) {
+      console.log(e);
       throw new Error(`Could not update user. Please try again`);
+    }
+  }
+
+  @Query((returns) => [Users])
+  async getLeaderBoard(
+    @Ctx() { userClient, authToken, req }: ContextType
+  ): Promise<Users[]> {
+    try {
+      const empty = new grpcEmpty();
+      const result = await makeRPCCall<GetLeaderBoardResponse, grpcEmpty>(
+        userClient,
+        userClient.getLeaderBoard,
+        empty,
+        {
+          //@ts-ignore
+          authorization: req.header("authorization"),
+        }
+      );
+
+      const users = result
+        .getUsersList()
+        .filter((a) => a.getQuestionsattempted() != 0)
+        .map(
+          (a) =>
+            new Users(
+              a.getName(),
+              a.getQuestionsattempted(),
+              a.getUsername(),
+              a.getLastansweredquestiontime()
+            )
+        );
+
+      return users.sort((a, b) => {
+        const n = a.questionAttempted - b.questionAttempted;
+        if (n !== 0) return b.questionAttempted - a.questionAttempted;
+        const aTime = moment(a.lastAnsweredQuestionTime);
+        const bTime = moment(a.lastAnsweredQuestionTime);
+        if (aTime.diff(bTime) > 0) return 1;
+        return 0;
+      });
+    } catch (e) {
+      console.log(e);
+      throw new Error(`Could not check database`);
+    }
+  }
+
+  @Query((returns) => RankInfo)
+  async getMyProfileInfo(
+    @Ctx() { userClient, authToken, req }: ContextType,
+    @Arg("input") payload: GetMyProfileInput
+  ): Promise<RankInfo> {
+    try {
+      const empty = new grpcEmpty();
+      const result = await makeRPCCall<GetLeaderBoardResponse, grpcEmpty>(
+        userClient,
+        userClient.getLeaderBoard,
+        empty,
+        {
+          //@ts-ignore
+          authorization: req.header("authorization"),
+        }
+      );
+
+      const users = result
+        .getUsersList()
+        .filter((a) => a.getQuestionsattempted() != 0)
+        .map((a) => {
+          return {
+            questionAttempted: a.getQuestionsattempted(),
+            lastAnsweredQuestionTime: a.getLastansweredquestiontime(),
+            userId: a.getUserid(),
+          };
+        });
+
+      const a = users.sort((a, b) => {
+        const n = a.questionAttempted - b.questionAttempted;
+        if (n !== 0) return b.questionAttempted - a.questionAttempted;
+        const aTime = moment(a.lastAnsweredQuestionTime);
+        const bTime = moment(a.lastAnsweredQuestionTime);
+        if (aTime.diff(bTime) > 0) return 1;
+        return 0;
+      });
+
+      const rank = a.findIndex((b) => b.userId === payload.userId);
+      const totalStrength = a.length;
+
+      return new RankInfo(rank, totalStrength);
+    } catch (e) {
+      console.log(e);
+      throw new Error(`Could not check database`);
     }
   }
 }
