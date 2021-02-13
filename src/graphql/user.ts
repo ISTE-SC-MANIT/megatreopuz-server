@@ -326,35 +326,35 @@ export class UserClass {
     }
   }
 
-  @Mutation((returns) => Empty)
-  async createQuestion(
-    @Arg("input") payload: CreateQuestionInput,
-    @Ctx() { userClient, authToken, req }: ContextType
-  ): Promise<Empty> {
-    //if (!authToken) throw new Error(`User is not logged in`);
+  // @Mutation((returns) => Empty)
+  // async createQuestion(
+  //   @Arg("input") payload: CreateQuestionInput,
+  //   @Ctx() { userClient, authToken, req }: ContextType
+  // ): Promise<Empty> {
+  //   //if (!authToken) throw new Error(`User is not logged in`);
 
-    try {
-      const input = new CreateQuestionRequest();
-      input.setAnswer(payload.answer);
-      input.setImgurl(payload.imgUrl);
-      input.setQuestion(payload.question);
-      input.setQuestionno(payload.questionNo);
+  //   try {
+  //     const input = new CreateQuestionRequest();
+  //     input.setAnswer(payload.answer);
+  //     input.setImgurl(payload.imgUrl);
+  //     input.setQuestion(payload.question);
+  //     input.setQuestionno(payload.questionNo);
 
-      await makeRPCCall<grpcEmpty, CreateQuestionRequest>(
-        userClient,
-        userClient.createQuestion,
-        input,
-        {
-          //@ts-ignore
-          authorization: req.header("authorization"),
-        }
-      );
-      return new Empty();
-    } catch (e) {
-      console.log(e);
-      throw new Error(`Could not create user. Please try again`);
-    }
-  }
+  //     await makeRPCCall<grpcEmpty, CreateQuestionRequest>(
+  //       userClient,
+  //       userClient.createQuestion,
+  //       input,
+  //       {
+  //         //@ts-ignore
+  //         authorization: req.header("authorization"),
+  //       }
+  //     );
+  //     return new Empty();
+  //   } catch (e) {
+  //     console.log(e);
+  //     throw new Error(`Could not create user. Please try again`);
+  //   }
+  // }
 
   @Mutation((returns) => Empty)
   async updateLocalUser(
@@ -448,14 +448,17 @@ export class UserClass {
             )
         );
 
-      return users.sort((a, b) => {
+      const a = users.sort((a, b) => {
         const n = a.questionAttempted - b.questionAttempted;
         if (n !== 0) return b.questionAttempted - a.questionAttempted;
         const aTime = moment(a.lastAnsweredQuestionTime);
-        const bTime = moment(a.lastAnsweredQuestionTime);
-        if (aTime.diff(bTime) > 0) return 1;
-        return 0;
+        const bTime = moment(b.lastAnsweredQuestionTime);
+        // console.log(`aTime ${aTime}, bTime ${bTime}`);
+        if (aTime.isAfter(bTime)) return 1;
+        return -1;
       });
+      // console.log(a);
+      return a;
     } catch (e) {
       console.log(e);
       throw new Error(`Could not check database`);
