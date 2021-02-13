@@ -497,9 +497,9 @@ export class UserClass {
         const n = a.questionAttempted - b.questionAttempted;
         if (n !== 0) return b.questionAttempted - a.questionAttempted;
         const aTime = moment(a.lastAnsweredQuestionTime);
-        const bTime = moment(a.lastAnsweredQuestionTime);
-        if (aTime.diff(bTime) > 0) return 1;
-        return 0;
+        const bTime = moment(b.lastAnsweredQuestionTime);
+        if (aTime.isAfter(bTime)) return 1;
+        return -1;
       });
 
       const rank = a.findIndex((b) => b.userId === payload.userId);
