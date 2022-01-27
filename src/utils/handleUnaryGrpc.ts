@@ -1,4 +1,4 @@
-import { Metadata, Client, requestCallback } from "grpc";
+import { Metadata, Client, requestCallback } from '@grpc/grpc-js';
 
 export interface MetadataInput {
   [key: string]: string;

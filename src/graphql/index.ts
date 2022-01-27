@@ -1,16 +1,19 @@
-import { buildSchema } from "type-graphql";
-import { ApolloServer } from "apollo-server-express";
-import Express from "express";
-import { LoginClass } from "./login";
-import admin from "firebase-admin";
+import { buildSchema } from 'type-graphql';
+import { ApolloServer } from 'apollo-server-express';
+import Express from 'express';
+import { LoginClass } from './login';
+import admin from 'firebase-admin';
 
-import redis, { RedisClient } from "redis";
-import { credentials } from "grpc";
-import { AuthServiceClient } from "../protos/auth_grpc_pb";
-import { UserServiceClient } from "../protos/user_grpc_pb";
-import { UserClass } from "./user";
+import { credentials } from '@grpc/grpc-js';
+import { AuthServiceClient } from '../protos/auth_grpc_pb';
+import { UserServiceClient } from '../protos/user_grpc_pb';
+import { UserClass } from './user';
+import {
+  ApolloServerPluginLandingPageDisabled,
+  ApolloServerPluginLandingPageGraphQLPlayground,
+} from 'apollo-server-core';
 
-const serviceAccount = require("../../../m2.json");
+const serviceAccount = require('../../../m2.json');
 export interface ContextType {
   res: Express.Response;
   req: Express.Request;
@@ -36,29 +39,33 @@ export async function makeServer(): Promise<ApolloServer> {
   // if (process.env.REDIS_PASSWORD) opts.password = process.env.REDIS_PASSWORD;
   // const redisClient = redis.createClient(opts);
   const authClient = new AuthServiceClient(
-    process.env.AUTH_GRPC_SERVER ?? "",
+    process.env.AUTH_GRPC_SERVER ?? '',
     credentials.createInsecure()
   );
+
+  // const userClient = new UserServiceClient(
+  //   process.env.USER_GRPC_SERVER ?? '',
+  //   credentials.createInsecure()
+  // );
 
   const userClient = new UserServiceClient(
-    process.env.USER_GRPC_SERVER ?? "",
+    process.env.USER_GRPC_SERVER ?? '',
     credentials.createInsecure()
   );
-
   return new ApolloServer({
     schema,
     context: ({ req, res }): ContextType => ({
       req,
       res,
       // redisClient: redisClient,
-      authToken: req.cookies["authorization"],
+      authToken: req.cookies['authorization'],
       authClient,
       userClient,
     }),
-    playground: {
-      settings: {
-        "request.credentials": "same-origin",
-      },
-    },
+    plugins: [
+      process.env.NODE_ENV === 'production'
+        ? ApolloServerPluginLandingPageDisabled()
+        : ApolloServerPluginLandingPageGraphQLPlayground(),
+    ],
   });
 }

@@ -6,21 +6,20 @@ import {
   Query,
   Arg,
   Ctx,
-} from "type-graphql";
-import "reflect-metadata";
-import admin from "firebase-admin";
-import { expiresIn, defaultCookieOptions } from "../utils/defaultCookies";
-import { ContextType } from ".";
-import { uuid } from "uuidv4";
-import { makeRPCCall, MetadataInput } from "../utils/handleUnaryGrpc";
-import { AuthServiceClient } from "../protos/auth_grpc_pb";
+} from 'type-graphql';
+import 'reflect-metadata';
+import admin from 'firebase-admin';
+import { expiresIn, defaultCookieOptions } from '../utils/defaultCookies';
+import { ContextType } from '.';
+import { makeRPCCall, MetadataInput } from '../utils/handleUnaryGrpc';
+import { AuthServiceClient } from '../protos/auth_grpc_pb';
 import {
   CheckStateResponse,
   CheckUsernameAvailabilityRequest,
   CheckUsernameAvailabilityResponse,
-} from "../protos/auth_pb";
-import { credentials } from "grpc";
-import { Empty } from "../protos/utils_pb";
+} from '../protos/auth_pb';
+
+import { Empty } from '../protos/utils_pb';
 @ObjectType()
 class UserInitStatus {
   constructor(value: boolean, cookie: string) {
@@ -47,7 +46,7 @@ class UsernameAvailability {
 export class LoginClass {
   @Query((returns) => UsernameAvailability)
   async checkUsername(
-    @Arg("username") username: string,
+    @Arg('username') username: string,
     @Ctx() { authClient }: ContextType
   ): Promise<UsernameAvailability> {
     const request = new CheckUsernameAvailabilityRequest();
@@ -67,10 +66,10 @@ export class LoginClass {
   @Mutation((returns) => UserInitStatus)
   async createUserSession(
     @Ctx() { res, authClient: client }: ContextType,
-    @Arg("idToken") idToken: string
+    @Arg('idToken') idToken: string
   ): Promise<UserInitStatus> {
     const empty = new Empty();
-    console.log("a");
+    console.log('a');
     console.log(idToken);
 
     try {
@@ -78,7 +77,7 @@ export class LoginClass {
         .auth()
         .createSessionCookie(idToken, { expiresIn });
 
-      res.cookie("authorization2", cookie, {
+      res.cookie('authorization2', cookie, {
         ...defaultCookieOptions,
         expires: new Date(Date.now() + expiresIn),
       });
